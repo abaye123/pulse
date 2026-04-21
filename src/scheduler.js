@@ -6,6 +6,7 @@ import { runSystemCollector } from './collectors/system.js';
 import { runDockerCollector } from './collectors/docker.js';
 import { refreshSites, runNginxCollector } from './collectors/nginx.js';
 import { runLatencyCollector } from './collectors/latency.js';
+import { publishOverview } from './sse.js';
 
 function now() {
   return Date.now();
@@ -39,6 +40,9 @@ export async function runAllCollectorsOnce() {
   await safeRun('nginx', runNginxCollector);
 
   state.lastCollectionTs = Math.floor(Date.now() / 1000);
+
+  // Broadcast the fresh snapshot to any SSE subscribers. No-op if none.
+  try { publishOverview(); } catch {}
 }
 
 export async function runRetention() {

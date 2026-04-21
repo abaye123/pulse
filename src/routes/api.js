@@ -3,6 +3,7 @@ import { openDb, dbStats } from '../db.js';
 import { state } from '../state.js';
 import { run as shellRun, validateName } from '../lib/shell.js';
 import { runSystemCollector } from '../collectors/system.js';
+import { addSubscriber, removeSubscriber } from '../sse.js';
 
 const RANGE_SECONDS = {
   '1h': 3600,
@@ -207,5 +208,33 @@ export default async function apiRoutes(fastify) {
       stderr: result.stderr,
       code: result.code
     };
+  });
+
+  // Server-Sent Events stream for the live-mode dashboard. While at least one
+  // client is connected, sse.js also runs a fast system collector (every 2s)
+  // so CPU/RAM/load stream in near-real-time.
+  fastify.get('/api/stream', (req, reply) => {
+    const res = reply.raw;
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
+      // Tells Nginx not to buffer the response (no effect elsewhere)
+      'X-Accel-Buffering': 'no'
+    });
+    // Initial comment flushes headers through any intermediate proxies
+    res.write(': connected\n\n');
+
+    addSubscriber(res);
+
+    const cleanup = () => {
+      removeSubscriber(res);
+      try { res.end(); } catch {}
+    };
+    req.raw.on('close', cleanup);
+    req.raw.on('error', cleanup);
+
+    // Tell Fastify not to finalize the response — sse.js owns it now.
+    reply.hijack();
   });
 }
