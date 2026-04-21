@@ -37,8 +37,10 @@ export async function postAction<T = { ok: boolean; message?: string; error?: st
 
 export interface ServerSnapshot {
   cpuPct: number;
-  memUsedMb: number;
+  memUsedMb: number;           // apps/kernel non-reclaimable (total - available)
   memTotalMb: number;
+  memAvailableMb: number;      // reclaimable + free, what new apps can use
+  memBuffCacheMb: number;      // buffers + page cache (counted as available)
   load: [number, number, number];
   uptimeSec: number;
 }

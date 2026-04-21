@@ -3,7 +3,7 @@ import { Cpu, MemoryStick, Activity, HardDrive } from 'lucide-react';
 import { MetricCard } from '@/components/MetricCard';
 import { useHistory } from '@/hooks/useHistory';
 import type { OverviewResponse } from '@/lib/api';
-import { formatUptime } from '@/lib/utils';
+import { formatUptime, formatMb } from '@/lib/utils';
 
 interface ServerOverviewProps {
   overview: OverviewResponse | null;
@@ -43,7 +43,12 @@ export function ServerOverview({ overview }: ServerOverviewProps) {
       <MetricCard
         label={t('overview.memory')}
         value={server ? `${((server.memUsedMb / Math.max(server.memTotalMb, 1)) * 100).toFixed(0)}%` : '—'}
-        hint={server ? `${server.memUsedMb} / ${server.memTotalMb} MB` : ''}
+        hint={
+          server
+            ? `${formatMb(server.memUsedMb)} / ${formatMb(server.memTotalMb)}` +
+              (server.memBuffCacheMb ? ` • +${formatMb(server.memBuffCacheMb)} ${t('overview.cache')}` : '')
+            : ''
+        }
         icon={MemoryStick}
         sparkline={memSpark}
         sparklineColor="hsl(var(--secondary))"

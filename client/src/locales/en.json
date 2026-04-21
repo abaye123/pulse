@@ -13,6 +13,7 @@
     "load": "Load",
     "disk": "Disk",
     "uptime": "Uptime",
+    "cache": "cache",
     "lastUpdate": "Updated {{seconds}}s ago",
     "neverUpdated": "Not yet updated"
   },

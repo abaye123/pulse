@@ -12,6 +12,12 @@ export function formatBytes(bytes: number): string {
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${units[i]}`;
 }
 
+export function formatMb(mb: number): string {
+  if (!mb) return '0 MB';
+  if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
+  return `${Math.round(mb)} MB`;
+}
+
 export function formatUptime(seconds: number): string {
   if (!seconds || seconds < 0) return '-';
   const d = Math.floor(seconds / 86400);

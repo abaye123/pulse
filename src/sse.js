@@ -17,7 +17,8 @@ let heartbeatTimer = null;
 
 function buildOverview() {
   const sys = state.system || {
-    cpuPct: 0, memUsedMb: 0, memTotalMb: 0, load: [0, 0, 0], uptimeSec: Math.round(os.uptime())
+    cpuPct: 0, memUsedMb: 0, memTotalMb: 0, memAvailableMb: 0, memBuffCacheMb: 0,
+    load: [0, 0, 0], uptimeSec: Math.round(os.uptime())
   };
   return {
     lastCollectionTs: state.lastCollectionTs,
@@ -25,6 +26,8 @@ function buildOverview() {
       cpuPct: sys.cpuPct,
       memUsedMb: sys.memUsedMb,
       memTotalMb: sys.memTotalMb,
+      memAvailableMb: sys.memAvailableMb ?? 0,
+      memBuffCacheMb: sys.memBuffCacheMb ?? 0,
       load: sys.load,
       uptimeSec: sys.uptimeSec
     },

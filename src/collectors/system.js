@@ -14,10 +14,24 @@ export async function collectSystem() {
   const loadavg = os.loadavg();
   const defaultIface = (net || []).find((n) => !n.iface?.startsWith('lo') && !n.iface?.startsWith('docker')) || net[0] || {};
 
+  // Linux aggressively uses free RAM for page cache, so `mem.used` (total - free)
+  // misleadingly reports ~90%+ on healthy systems. The meaningful number is what
+  // applications have actually reserved and the kernel can't reclaim — i.e.
+  // total - available. `mem.available` comes from MemAvailable in /proc/meminfo
+  // (kernel >= 3.14). Fall back to `active` (= used - buffcache) if missing.
+  const memTotal = mem.total || 0;
+  const memAvailable = (typeof mem.available === 'number' && mem.available > 0)
+    ? mem.available
+    : Math.max(0, memTotal - (mem.active || 0));
+  const memReallyUsed = Math.max(0, memTotal - memAvailable);
+  const memBuffCache = mem.buffcache || ((mem.buffers || 0) + (mem.cached || 0));
+
   const system = {
     cpuPct: Number((load.currentLoad || 0).toFixed(2)),
-    memUsedMb: Math.round((mem.used || 0) / 1024 / 1024),
-    memTotalMb: Math.round((mem.total || 0) / 1024 / 1024),
+    memUsedMb: Math.round(memReallyUsed / 1024 / 1024),
+    memTotalMb: Math.round(memTotal / 1024 / 1024),
+    memAvailableMb: Math.round(memAvailable / 1024 / 1024),
+    memBuffCacheMb: Math.round(memBuffCache / 1024 / 1024),
     load: [loadavg[0], loadavg[1], loadavg[2]],
     uptimeSec: Math.round(os.uptime()),
     netRxBytes: Math.round(defaultIface.rx_bytes || 0),

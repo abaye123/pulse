@@ -13,6 +13,7 @@
     "load": "עומס",
     "disk": "דיסק",
     "uptime": "זמן פעילות",
+    "cache": "מטמון",
     "lastUpdate": "עודכן לפני {{seconds}} שניות",
     "neverUpdated": "טרם עודכן"
   },
