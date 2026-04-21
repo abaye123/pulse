@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { DirectionProvider } from '@radix-ui/react-direction';
 import { fetchJson, type SessionUser } from '@/lib/api';
 import { useDirection } from '@/hooks/useDirection';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -44,22 +45,24 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  useDirection();
+  const dir = useDirection();
   return (
-    <TooltipProvider delayDuration={200}>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/denied" element={<AccessDenied />} />
-        <Route
-          path="/*"
-          element={
-            <RequireAuth>
-              <Dashboard />
-            </RequireAuth>
-          }
-        />
-      </Routes>
-      <Toaster position="top-center" richColors closeButton />
-    </TooltipProvider>
+    <DirectionProvider dir={dir}>
+      <TooltipProvider delayDuration={200}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/denied" element={<AccessDenied />} />
+          <Route
+            path="/*"
+            element={
+              <RequireAuth>
+                <Dashboard />
+              </RequireAuth>
+            }
+          />
+        </Routes>
+        <Toaster position="top-center" richColors closeButton />
+      </TooltipProvider>
+    </DirectionProvider>
   );
 }
