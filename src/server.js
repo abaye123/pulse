@@ -64,8 +64,7 @@ a{color:#4f46e5}</style></head>
   if (hasClient) {
     await fastify.register(fastifyStatic, {
       root: clientDistDir,
-      prefix: '/',
-      decorateReply: false
+      prefix: '/'
     });
     // SPA fallback: any unmatched non-API GET serves index.html
     fastify.setNotFoundHandler((req, reply) => {
