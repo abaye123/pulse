@@ -22,25 +22,41 @@ export function getSites() {
   return state.nginxSites;
 }
 
-// Count outgoing nginx → backend established connections, grouped by remote port.
-// We use a shell pipeline here (not execFile) because ss | grep | awk is the
-// clearest way to express this. The command string is fully controlled (the
-// only dynamic value is nginxProcessName, which we sanitize).
+// Match one IPv4 or bracketed IPv6 address followed by :port, capturing the port.
+const ADDR_PORT_RE = /(?:\[[0-9a-f:]+\]|\d+\.\d+\.\d+\.\d+):(\d+)/gi;
+
+// Count ALL established connections owned by the Nginx worker, grouped by the
+// port on the peer side. For a nginx→backend connection the peer is
+// 127.0.0.1:<backend_port>, so grouping by peer port gives active connections
+// per site. For browser→nginx connections the peer is the client's ephemeral
+// port, so those buckets look random and never match a backend_port — i.e.
+// they're harmless noise once we lookup sites by their specific backend port.
+//
+// We parse in JS (not with awk) because the column positions of `ss` output
+// shift depending on whether `state X` filters include the State column, and
+// a regex-based scan is robust across Ubuntu/kernel versions.
 async function countBackendConnections() {
-  const procName = config.nginxProcessName.replace(/[^a-zA-Z0-9_-]/g, '');
-  if (!procName) return new Map();
-  const cmd = `ss -tnp state established 2>/dev/null | grep ${procName} | awk '{print $5}' | awk -F: '{print $NF}' | sort | uniq -c`;
-  const counts = new Map();
+  const procName = config.nginxProcessName || 'nginx';
   try {
-    const { stdout } = await execAsync(cmd, { timeout: 10000, maxBuffer: 4 * 1024 * 1024 });
-    for (const line of stdout.trim().split('\n')) {
-      const m = line.trim().match(/^(\d+)\s+(\d+)$/);
-      if (m) counts.set(Number(m[2]), Number(m[1]));
+    const { stdout } = await execAsync(
+      'ss -tnp state established',
+      { timeout: 10000, maxBuffer: 8 * 1024 * 1024 }
+    );
+    const counts = new Map();
+    for (const line of stdout.split('\n')) {
+      if (!line.includes(`"${procName}"`)) continue;
+      const matches = [...line.matchAll(ADDR_PORT_RE)];
+      // Two addr:port tokens per connection: local first, peer second.
+      if (matches.length < 2) continue;
+      const peerPort = Number(matches[1][1]);
+      if (!Number.isFinite(peerPort)) continue;
+      counts.set(peerPort, (counts.get(peerPort) || 0) + 1);
     }
+    return counts;
   } catch (err) {
-    // ss may not be present in dev or may not have permission — return empty map
+    // ss not available or no permission — return empty map
+    return new Map();
   }
-  return counts;
 }
 
 // Merges connection counts into the existing state.sites (populated by latency collector)

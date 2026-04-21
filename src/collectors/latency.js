@@ -1,13 +1,46 @@
+import http from 'node:http';
+import https from 'node:https';
 import { state } from '../state.js';
 import { getSites } from './nginx.js';
 
 const LATENCY_CONCURRENCY = 20;
 const REQUEST_TIMEOUT_MS = 5000;
 
-async function probe(site) {
-  if (!site.backendPort) {
-    return { name: site.canonicalName, latencyMs: null, status: null };
-  }
+// Probe a static site by hitting nginx on its own listening port with a Host
+// header set to the site's canonical name. We accept port 80 directly, else
+// fall back to 443 with cert verification disabled (cert is for the real
+// hostname, but we connect to 127.0.0.1, so mismatch is expected).
+function probeViaNginx(site) {
+  const ports = site.listenPorts || [];
+  const hasHttp = ports.includes(80);
+  const port = hasHttp ? 80 : (ports[0] || 443);
+  const client = port === 443 ? https : http;
+  const options = {
+    hostname: '127.0.0.1',
+    port,
+    path: '/',
+    method: 'HEAD',
+    headers: { Host: site.canonicalName },
+    timeout: REQUEST_TIMEOUT_MS,
+    rejectUnauthorized: false
+  };
+  return new Promise((resolve) => {
+    const start = Date.now();
+    const req = client.request(options, (res) => {
+      resolve({ name: site.canonicalName, latencyMs: Date.now() - start, status: res.statusCode || null });
+      res.resume();
+      req.destroy();
+    });
+    req.on('error', () => resolve({ name: site.canonicalName, latencyMs: null, status: null }));
+    req.on('timeout', () => {
+      req.destroy();
+      resolve({ name: site.canonicalName, latencyMs: null, status: null });
+    });
+    req.end();
+  });
+}
+
+async function probeBackend(site) {
   const url = `http://127.0.0.1:${site.backendPort}/`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -18,16 +51,17 @@ async function probe(site) {
       signal: controller.signal,
       redirect: 'manual'
     });
-    return {
-      name: site.canonicalName,
-      latencyMs: Date.now() - start,
-      status: res.status
-    };
+    return { name: site.canonicalName, latencyMs: Date.now() - start, status: res.status };
   } catch (err) {
     return { name: site.canonicalName, latencyMs: null, status: null };
   } finally {
     clearTimeout(timer);
   }
+}
+
+async function probe(site) {
+  if (site.backendPort) return probeBackend(site);
+  return probeViaNginx(site);
 }
 
 async function limitedParallel(items, worker, concurrency) {
