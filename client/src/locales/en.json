@@ -1,0 +1,116 @@
+{
+  "app": {
+    "title": "Pulse — Server Monitor",
+    "subtitle": "Container & site management"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "logout": "Sign out"
+  },
+  "overview": {
+    "cpu": "CPU",
+    "memory": "Memory",
+    "load": "Load",
+    "disk": "Disk",
+    "uptime": "Uptime",
+    "lastUpdate": "Updated {{seconds}}s ago",
+    "neverUpdated": "Not yet updated"
+  },
+  "metrics": {
+    "cpuSuffix": "%",
+    "memorySuffix": "MB",
+    "loadAvg": "Load average",
+    "diskUsage": "Disk usage"
+  },
+  "charts": {
+    "title": "Charts",
+    "cpu": "CPU",
+    "memory": "Memory",
+    "network": "Network",
+    "disk": "Disk",
+    "noData": "No data for the selected range"
+  },
+  "compose": {
+    "projectsTitle": "Docker services",
+    "standalone": "Standalone containers",
+    "allRunning": "{{count}} running",
+    "someDown": "{{running}}/{{total}} running",
+    "container": "Container",
+    "state": "State",
+    "running": "running",
+    "exited": "exited",
+    "restarting": "restarting",
+    "paused": "paused",
+    "created": "created",
+    "dead": "dead",
+    "actions": {
+      "up": "Start",
+      "down": "Stop",
+      "restart": "Restart",
+      "start": "Start",
+      "stop": "Stop"
+    }
+  },
+  "sites": {
+    "title": "Sites",
+    "columns": {
+      "name": "Site",
+      "port": "Port",
+      "connections": "Connections",
+      "latency": "Latency",
+      "status": "Status"
+    },
+    "static": "Static",
+    "noBackend": "—",
+    "detailTitle": "Site details",
+    "connectionsChart": "Active connections",
+    "latencyChart": "Latency (ms)",
+    "restartProject": "Restart service"
+  },
+  "actions": {
+    "start": "Start",
+    "stop": "Stop",
+    "restart": "Restart",
+    "confirm": "Perform {{action}} on {{target}}?",
+    "confirmDetails": "This action runs immediately and cannot be undone.",
+    "cancel": "Cancel",
+    "confirmButton": "Confirm",
+    "success": "Action completed",
+    "error": "Error: {{message}}",
+    "pending": "Running..."
+  },
+  "history": {
+    "title": "History",
+    "size": "History size: {{size}}",
+    "rowCount": "{{count}} rows",
+    "oldest": "Oldest: {{date}}",
+    "purge": "Purge old history",
+    "purgeConfirm": "Purge data older than {{days}} days?",
+    "purgeSuccess": "Purged {{count}} rows",
+    "range": {
+      "1h": "1 hour",
+      "6h": "6 hours",
+      "24h": "24 hours",
+      "7d": "7 days",
+      "30d": "30 days"
+    }
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Server monitoring & management",
+    "signInWithGoogle": "Sign in with Google",
+    "deniedTitle": "Access denied",
+    "deniedMessage": "The email {{email}} is not authorized to access this system.",
+    "deniedBack": "Back to sign in"
+  },
+  "theme": {
+    "toggleLight": "Light mode",
+    "toggleDark": "Dark mode"
+  },
+  "language": "Language",
+  "common": {
+    "loading": "Loading...",
+    "noData": "No data",
+    "error": "Error"
+  }
+}

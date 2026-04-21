@@ -1,0 +1,28 @@
+{
+  "name": "channels-monitor",
+  "version": "0.1.0",
+  "description": "Server monitoring & management dashboard for Dockerized Nginx-proxied instances",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "build:client": "cd client && npm ci && npm run build",
+    "install:all": "npm install && cd client && npm install"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^9.3.1",
+    "@fastify/oauth2": "^7.8.1",
+    "@fastify/session": "^10.9.0",
+    "@fastify/static": "^7.0.4",
+    "better-sqlite3": "^11.5.0",
+    "dockerode": "^4.0.2",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.1",
+    "node-cron": "^3.0.3",
+    "systeminformation": "^5.23.5"
+  },
+  "devDependencies": {}
+}

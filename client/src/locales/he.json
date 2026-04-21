@@ -1,0 +1,116 @@
+{
+  "app": {
+    "title": "Pulse — ניטור שרת",
+    "subtitle": "ניהול קונטיינרים ואתרים"
+  },
+  "nav": {
+    "dashboard": "דשבורד",
+    "logout": "התנתק"
+  },
+  "overview": {
+    "cpu": "מעבד",
+    "memory": "זיכרון",
+    "load": "עומס",
+    "disk": "דיסק",
+    "uptime": "זמן פעילות",
+    "lastUpdate": "עודכן לפני {{seconds}} שניות",
+    "neverUpdated": "טרם עודכן"
+  },
+  "metrics": {
+    "cpuSuffix": "%",
+    "memorySuffix": "MB",
+    "loadAvg": "ממוצע עומס",
+    "diskUsage": "ניצול דיסק"
+  },
+  "charts": {
+    "title": "תרשימים",
+    "cpu": "מעבד",
+    "memory": "זיכרון",
+    "network": "רשת",
+    "disk": "דיסק",
+    "noData": "אין נתונים להצגה בטווח הנבחר"
+  },
+  "compose": {
+    "projectsTitle": "שירותי דוקר",
+    "standalone": "קונטיינרים עצמאיים",
+    "allRunning": "{{count}} פעילים",
+    "someDown": "{{running}}/{{total}} פעילים",
+    "container": "קונטיינר",
+    "state": "מצב",
+    "running": "רץ",
+    "exited": "עצר",
+    "restarting": "מופעל מחדש",
+    "paused": "מושהה",
+    "created": "נוצר",
+    "dead": "מת",
+    "actions": {
+      "up": "הפעל",
+      "down": "כבה",
+      "restart": "הפעל מחדש",
+      "start": "הפעל",
+      "stop": "עצור"
+    }
+  },
+  "sites": {
+    "title": "אתרים",
+    "columns": {
+      "name": "שם האתר",
+      "port": "פורט",
+      "connections": "חיבורים",
+      "latency": "זמן תגובה",
+      "status": "סטטוס"
+    },
+    "static": "סטטי",
+    "noBackend": "—",
+    "detailTitle": "פרטי אתר",
+    "connectionsChart": "חיבורים פעילים",
+    "latencyChart": "זמן תגובה (ms)",
+    "restartProject": "הפעל מחדש את השירות"
+  },
+  "actions": {
+    "start": "הפעל",
+    "stop": "עצור",
+    "restart": "הפעל מחדש",
+    "confirm": "האם לבצע {{action}} על {{target}}?",
+    "confirmDetails": "הפעולה תתבצע מיידית ולא ניתנת לביטול.",
+    "cancel": "ביטול",
+    "confirmButton": "אישור",
+    "success": "הפעולה בוצעה בהצלחה",
+    "error": "שגיאה: {{message}}",
+    "pending": "מבצע..."
+  },
+  "history": {
+    "title": "היסטוריה",
+    "size": "גודל היסטוריה: {{size}}",
+    "rowCount": "{{count}} רשומות",
+    "oldest": "הכי ישן: {{date}}",
+    "purge": "נקה היסטוריה ישנה",
+    "purgeConfirm": "האם לנקות נתונים ישנים מ-{{days}} ימים?",
+    "purgeSuccess": "נמחקו {{count}} רשומות",
+    "range": {
+      "1h": "שעה",
+      "6h": "6 שעות",
+      "24h": "יממה",
+      "7d": "שבוע",
+      "30d": "חודש"
+    }
+  },
+  "auth": {
+    "loginTitle": "התחברות למערכת",
+    "loginSubtitle": "ניטור וניהול שרתים",
+    "signInWithGoogle": "התחבר עם Google",
+    "deniedTitle": "הגישה נדחתה",
+    "deniedMessage": "האימייל {{email}} אינו מורשה להיכנס למערכת זו.",
+    "deniedBack": "חזרה להתחברות"
+  },
+  "theme": {
+    "toggleLight": "מצב בהיר",
+    "toggleDark": "מצב כהה"
+  },
+  "language": "שפה",
+  "common": {
+    "loading": "טוען...",
+    "noData": "אין נתונים",
+    "error": "שגיאה"
+  }
+}

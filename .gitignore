@@ -1,0 +1,10 @@
+node_modules/
+client/node_modules/
+client/dist/
+.env
+*.log
+.DS_Store
+metrics.db
+metrics.db-journal
+metrics.db-wal
+metrics.db-shm
