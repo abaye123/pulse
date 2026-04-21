@@ -107,6 +107,13 @@
     "toggleLight": "מצב בהיר",
     "toggleDark": "מצב כהה"
   },
+  "live": {
+    "on": "לייב",
+    "off": "רגיל",
+    "toggle": "החלף מצב לייב",
+    "tooltipOn": "רענון אוטומטי כל שנייה",
+    "tooltipOff": "רענון אוטומטי כל 5 שניות"
+  },
   "language": "שפה",
   "common": {
     "loading": "טוען...",

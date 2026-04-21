@@ -107,6 +107,13 @@
     "toggleLight": "Light mode",
     "toggleDark": "Dark mode"
   },
+  "live": {
+    "on": "Live",
+    "off": "Normal",
+    "toggle": "Toggle live mode",
+    "tooltipOn": "Refreshing every second",
+    "tooltipOff": "Refreshing every 5 seconds"
+  },
   "language": "Language",
   "common": {
     "loading": "Loading...",

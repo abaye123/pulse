@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { fetchJson, type OverviewResponse } from '@/lib/api';
 
+interface UseOverviewOptions {
+  intervalMs?: number;
+  live?: boolean;
+}
+
 interface UseOverviewResult {
   data: OverviewResponse | null;
   error: Error | null;
@@ -8,17 +13,20 @@ interface UseOverviewResult {
   refresh: () => Promise<void>;
 }
 
-export function useOverview(intervalMs = 5000): UseOverviewResult {
+export function useOverview(intervalMs = 5000, live = false): UseOverviewResult {
   const [data, setData] = useState<OverviewResponse | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
   const aliveRef = useRef(true);
   const timerRef = useRef<number | null>(null);
   const visibleRef = useRef<boolean>(typeof document === 'undefined' ? true : !document.hidden);
+  const liveRef = useRef(live);
+  liveRef.current = live;
 
   async function tick() {
     try {
-      const res = await fetchJson<OverviewResponse>('/api/overview');
+      const url = liveRef.current ? '/api/overview?live=true' : '/api/overview';
+      const res = await fetchJson<OverviewResponse>(url);
       if (aliveRef.current) {
         setData(res);
         setError(null);

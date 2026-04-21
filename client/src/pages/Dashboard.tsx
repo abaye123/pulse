@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Header } from '@/components/Header';
 import { ServerOverview } from '@/components/ServerOverview';
 import { SystemCharts } from '@/components/SystemCharts';
@@ -10,9 +10,17 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
+const NORMAL_INTERVAL_MS = 5000;
+const LIVE_INTERVAL_MS = 1000;
+
 export default function Dashboard() {
   const { t } = useTranslation();
-  const { data, error, refresh } = useOverview(5000);
+  // Not persisted — component unmount (logout / close) resets to false.
+  const [liveMode, setLiveMode] = useState(false);
+  const { data, error, refresh } = useOverview(
+    liveMode ? LIVE_INTERVAL_MS : NORMAL_INTERVAL_MS,
+    liveMode
+  );
 
   const projects = data?.composeProjects || [];
   const standaloneFirst = useMemo(() => {
@@ -28,7 +36,12 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header dbStats={data?.db || null} onPurged={refresh} />
+      <Header
+        dbStats={data?.db || null}
+        onPurged={refresh}
+        liveMode={liveMode}
+        onLiveModeChange={setLiveMode}
+      />
 
       <main className="container mx-auto px-4 py-6 space-y-6">
         {error ? (

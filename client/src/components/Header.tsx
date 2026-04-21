@@ -13,14 +13,17 @@ import {
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { PurgeHistoryButton } from '@/components/PurgeHistoryButton';
+import { LiveModeSwitch } from '@/components/LiveModeSwitch';
 import { fetchJson, type SessionUser, type DbStats } from '@/lib/api';
 
 interface HeaderProps {
   dbStats: DbStats | null;
   onPurged: () => void;
+  liveMode: boolean;
+  onLiveModeChange: (value: boolean) => void;
 }
 
-export function Header({ dbStats, onPurged }: HeaderProps) {
+export function Header({ dbStats, onPurged, liveMode, onLiveModeChange }: HeaderProps) {
   const { t } = useTranslation();
   const [user, setUser] = useState<SessionUser | null>(null);
 
@@ -40,7 +43,8 @@ export function Header({ dbStats, onPurged }: HeaderProps) {
           <span className="font-heading text-lg">{t('app.title')}</span>
         </div>
 
-        <div className="ms-auto flex items-center gap-1">
+        <div className="ms-auto flex items-center gap-2">
+          <LiveModeSwitch value={liveMode} onChange={onLiveModeChange} />
           <PurgeHistoryButton dbStats={dbStats} onPurged={onPurged} />
           <LanguageSwitcher />
           <ThemeSwitcher />

@@ -2,6 +2,7 @@ import os from 'node:os';
 import { openDb, dbStats } from '../db.js';
 import { state } from '../state.js';
 import { run as shellRun, validateName } from '../lib/shell.js';
+import { runSystemCollector } from '../collectors/system.js';
 
 const RANGE_SECONDS = {
   '1h': 3600,
@@ -145,7 +146,16 @@ function queryHistory(metric, query) {
 export default async function apiRoutes(fastify) {
   fastify.addHook('preHandler', fastify.requireAuth);
 
-  fastify.get('/api/overview', async () => {
+  fastify.get('/api/overview', async (req) => {
+    // When ?live=true, refresh the system collector on-demand (cheap — ~50ms).
+    // Docker/nginx/latency stay cached (1-minute cadence) because they're costly.
+    if (req.query?.live === 'true' || req.query?.live === '1') {
+      try {
+        await runSystemCollector();
+      } catch (err) {
+        req.log.warn({ err: err.message }, 'live refresh of system collector failed');
+      }
+    }
     const sys = state.system || {
       cpuPct: 0, memUsedMb: 0, memTotalMb: 0, load: [0, 0, 0], uptimeSec: Math.round(os.uptime())
     };
