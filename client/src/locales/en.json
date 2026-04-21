@@ -49,6 +49,15 @@
       "restart": "Restart",
       "start": "Start",
       "stop": "Stop"
+    },
+    "restartPolicy": {
+      "label": "Restart policy",
+      "tooltip": "Whether Docker should auto-start the container on daemon/host restart",
+      "no": "Off",
+      "always": "Always",
+      "unless-stopped": "Unless stopped",
+      "on-failure": "On failure",
+      "updated": "Policy updated to {{policy}}"
     }
   },
   "sites": {
@@ -113,6 +122,23 @@
     "toggle": "Toggle live mode",
     "tooltipOn": "Refreshing every second",
     "tooltipOff": "Refreshing every 5 seconds"
+  },
+  "system": {
+    "menu": "System",
+    "nginxReload": "Reload Nginx",
+    "nginxReloadDesc": "Hot-reload the config without dropping connections",
+    "nginxRestart": "Restart Nginx",
+    "nginxRestartDesc": "Restart the Nginx service; open connections will drop",
+    "nginxTest": "Test Nginx config",
+    "nginxTestDesc": "nginx -t — no effect on the service",
+    "reboot": "Reboot server",
+    "rebootDesc": "Reboot the entire Ubuntu host",
+    "rebootConfirmTitle": "Reboot the server?",
+    "rebootConfirmBody": "The server will be offline for about 60 seconds. All containers will stop and restart. The dashboard will disconnect and must be refreshed to reconnect. This cannot be undone.",
+    "rebootConfirmInput": "Type REBOOT to confirm",
+    "rebootPending": "Sending reboot command...",
+    "rebootSuccess": "Reboot command sent — server will be back in ~60 seconds",
+    "reconnecting": "Trying to reconnect..."
   },
   "language": "Language",
   "common": {

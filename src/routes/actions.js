@@ -11,6 +11,9 @@ const docker = new Docker({ socketPath: '/var/run/docker.sock' });
 const DOCKER_BIN = '/usr/bin/docker';
 const NGINX_BIN = '/usr/sbin/nginx';
 const SUDO_BIN = '/usr/bin/sudo';
+const SYSTEMCTL_BIN = '/usr/bin/systemctl';
+
+const VALID_RESTART_POLICIES = new Set(['no', 'always', 'unless-stopped', 'on-failure']);
 
 function needsSudo() {
   return typeof process.getuid === 'function' && process.getuid() !== 0;
@@ -23,6 +26,13 @@ function nginxArgs(extra) {
     return { bin: SUDO_BIN, args: [NGINX_BIN, ...extra] };
   }
   return { bin: NGINX_BIN, args: extra };
+}
+
+function systemctlArgs(extra) {
+  if (needsSudo()) {
+    return { bin: SUDO_BIN, args: [SYSTEMCTL_BIN, ...extra] };
+  }
+  return { bin: SYSTEMCTL_BIN, args: extra };
 }
 
 async function composeExists(project) {
@@ -95,6 +105,37 @@ export default async function actionRoutes(fastify) {
     });
   }
 
+  // Change a container's Docker restart policy (affects future restarts of
+  // the Docker daemon or host reboots — does NOT touch a running container).
+  fastify.post('/api/action/container/:name/restart-policy/:policy', async (req, reply) => {
+    let name;
+    try {
+      name = validateName(req.params.name);
+    } catch (err) {
+      reply.code(400);
+      return { ok: false, error: err.message };
+    }
+    const policy = String(req.params.policy || '');
+    if (!VALID_RESTART_POLICIES.has(policy)) {
+      reply.code(400);
+      return { ok: false, error: `invalid policy (must be one of: ${[...VALID_RESTART_POLICIES].join(', ')})` };
+    }
+    if (!(await containerExists(name))) {
+      log(req, name, 'container:restart-policy', false, 'not found');
+      reply.code(404);
+      return { ok: false, error: 'container not found' };
+    }
+    try {
+      await docker.getContainer(name).update({ RestartPolicy: { Name: policy } });
+      log(req, name, 'container:restart-policy', true, `policy=${policy}`);
+      return { ok: true, message: 'restart policy updated', policy };
+    } catch (err) {
+      log(req, name, 'container:restart-policy', false, err.message);
+      reply.code(500);
+      return { ok: false, error: err.message };
+    }
+  });
+
   // ---------------- compose actions ----------------
 
   const composeActions = {
@@ -159,6 +200,40 @@ export default async function actionRoutes(fastify) {
     return ok
       ? { ok: true, message: 'nginx reloaded' }
       : { ok: false, error: result.stderr || result.stdout };
+  });
+
+  // Full Nginx service restart (kills workers and respawns). Heavier than
+  // `-s reload` because it drops in-flight connections.
+  fastify.post('/api/action/nginx/restart', async (req, reply) => {
+    const { bin, args } = systemctlArgs(['restart', 'nginx']);
+    const result = await shellRun(bin, args);
+    const ok = result.code === 0;
+    log(req, 'nginx', 'nginx:restart', ok, ok ? '' : result.stderr.trim());
+    if (ok) {
+      refreshSites().catch(() => {});
+    } else {
+      reply.code(500);
+    }
+    return ok
+      ? { ok: true, message: 'nginx restarted' }
+      : { ok: false, error: result.stderr || result.stdout };
+  });
+
+  // ---------------- host actions ----------------
+
+  // Reboots the whole Ubuntu host. Extremely destructive — all containers
+  // and this monitor go down until the host comes back up. The client should
+  // gate this behind a strong confirmation dialog.
+  fastify.post('/api/action/server/reboot', async (req, reply) => {
+    log(req, 'server', 'server:reboot', true, 'initiating systemctl reboot');
+    // Fire-and-forget — the response must race back to the client before the
+    // kernel terminates the process. systemctl reboot blocks until shutdown
+    // starts, so we kick it off without awaiting and return immediately.
+    const { bin, args } = systemctlArgs(['reboot']);
+    shellRun(bin, args).catch((err) => {
+      console.error(`[action] server:reboot failed: ${err.message}`);
+    });
+    return { ok: true, message: 'reboot initiated; server will be back in ~1 minute' };
   });
 
   // ---------------- db purge ----------------

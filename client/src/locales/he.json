@@ -49,6 +49,15 @@
       "restart": "הפעל מחדש",
       "start": "הפעל",
       "stop": "עצור"
+    },
+    "restartPolicy": {
+      "label": "מדיניות הפעלה מחדש",
+      "tooltip": "האם להפעיל מחדש אוטומטית כשהשרת או Docker עולים",
+      "no": "מושבת",
+      "always": "תמיד",
+      "unless-stopped": "אלא אם נעצר",
+      "on-failure": "בכישלון",
+      "updated": "מדיניות עודכנה ל-{{policy}}"
     }
   },
   "sites": {
@@ -113,6 +122,23 @@
     "toggle": "החלף מצב לייב",
     "tooltipOn": "רענון אוטומטי כל שנייה",
     "tooltipOff": "רענון אוטומטי כל 5 שניות"
+  },
+  "system": {
+    "menu": "מערכת",
+    "nginxReload": "רענן Nginx (reload)",
+    "nginxReloadDesc": "טעינה חמה של קונפיגורציה, בלי ניתוק חיבורים",
+    "nginxRestart": "הפעלה מחדש של Nginx",
+    "nginxRestartDesc": "מפעיל מחדש את שירות Nginx; חיבורים פתוחים ינותקו",
+    "nginxTest": "בדוק תחביר Nginx",
+    "nginxTestDesc": "nginx -t — ללא השפעה על השירות",
+    "reboot": "הפעלה מחדש של השרת",
+    "rebootDesc": "מפעיל מחדש את מכונת Ubuntu כולה",
+    "rebootConfirmTitle": "להפעיל מחדש את השרת?",
+    "rebootConfirmBody": "השרת יהיה מנותק כ-60 שניות. כל הקונטיינרים ייעצרו וייפתחו מחדש. הדאשבורד יתנתק וצריך לרענן כדי לחזור. פעולה זו אינה ניתנת לביטול.",
+    "rebootConfirmInput": "הקלד REBOOT לאישור",
+    "rebootPending": "שולח פקודת reboot...",
+    "rebootSuccess": "פקודת reboot נשלחה — השרת חוזר בעוד כ-60 שניות",
+    "reconnecting": "מנסה להתחבר מחדש..."
   },
   "language": "שפה",
   "common": {

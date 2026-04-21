@@ -7,7 +7,9 @@ const ALLOWED_BINS = new Set([
   '/usr/bin/docker',
   '/usr/sbin/nginx',
   '/usr/bin/ss',
-  '/usr/bin/sudo'
+  '/usr/bin/sudo',
+  '/usr/bin/systemctl',
+  '/bin/systemctl'
 ]);
 
 const NAME_RE = /^[a-z0-9][a-z0-9._-]{0,63}$/i;

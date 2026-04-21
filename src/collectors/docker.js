@@ -53,6 +53,7 @@ export async function collectDocker() {
       let memUsedMb = 0;
       let uptimeSec = 0;
       let restartCount = 0;
+      let restartPolicy = 'no';
 
       if (stateName === 'running') {
         try {
@@ -64,6 +65,7 @@ export async function collectDocker() {
           cpuPct = Number(cpuPercentFromStats(stats).toFixed(2));
           memUsedMb = Math.round((stats.memory_stats?.usage || 0) / 1024 / 1024);
           restartCount = inspect.RestartCount || 0;
+          restartPolicy = inspect.HostConfig?.RestartPolicy?.Name || 'no';
           if (inspect.State?.StartedAt) {
             const startedMs = new Date(inspect.State.StartedAt).getTime();
             uptimeSec = Math.max(0, Math.round((Date.now() - startedMs) / 1000));
@@ -76,6 +78,7 @@ export async function collectDocker() {
           const container = docker.getContainer(info.Id);
           const inspect = await container.inspect();
           restartCount = inspect.RestartCount || 0;
+          restartPolicy = inspect.HostConfig?.RestartPolicy?.Name || 'no';
         } catch (err) {
           // inspect failed — keep zero
         }
@@ -90,7 +93,8 @@ export async function collectDocker() {
         cpuPct,
         memUsedMb,
         uptimeSec,
-        restartCount
+        restartCount,
+        restartPolicy
       };
     },
     STATS_CONCURRENCY

@@ -14,6 +14,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { PurgeHistoryButton } from '@/components/PurgeHistoryButton';
 import { LiveModeSwitch } from '@/components/LiveModeSwitch';
+import { SystemMenu } from '@/components/SystemMenu';
 import { fetchJson, type SessionUser, type DbStats } from '@/lib/api';
 
 interface HeaderProps {
@@ -45,6 +46,7 @@ export function Header({ dbStats, onPurged, liveMode, onLiveModeChange }: Header
 
         <div className="ms-auto flex items-center gap-2">
           <LiveModeSwitch value={liveMode} onChange={onLiveModeChange} />
+          <SystemMenu />
           <PurgeHistoryButton dbStats={dbStats} onPurged={onPurged} />
           <LanguageSwitcher />
           <ThemeSwitcher />

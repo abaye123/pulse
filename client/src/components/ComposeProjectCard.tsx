@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { RestartPolicyBadge } from '@/components/RestartPolicyBadge';
 import { ApiError, postAction, type ComposeProject, type ContainerSnapshot } from '@/lib/api';
 import { formatUptime } from '@/lib/utils';
 
@@ -96,6 +97,11 @@ function ContainerRow({ container, onChanged }: { container: ContainerSnapshot; 
           <ActionButton action="start" icon={Play} label={t('compose.actions.start')} />
         )}
       </div>
+      <RestartPolicyBadge
+        containerName={container.name}
+        policy={container.restartPolicy}
+        onChanged={onChanged}
+      />
       <Badge variant={stateBadgeVariant(container.state)} className="min-w-16 justify-center">
         {t(`compose.${container.state}`, { defaultValue: container.state })}
       </Badge>

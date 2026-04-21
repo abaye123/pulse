@@ -49,6 +49,8 @@ export interface DiskSnapshot {
   totalGb: number;
 }
 
+export type RestartPolicy = 'no' | 'always' | 'unless-stopped' | 'on-failure';
+
 export interface ContainerSnapshot {
   id?: string;
   name: string;
@@ -59,6 +61,7 @@ export interface ContainerSnapshot {
   memUsedMb: number;
   uptimeSec: number;
   restartCount: number;
+  restartPolicy: RestartPolicy;
 }
 
 export interface ComposeProject {
