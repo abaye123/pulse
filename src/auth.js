@@ -20,7 +20,8 @@ export async function registerAuth(fastify) {
       maxAge: 7 * 24 * 3600 * 1000,
       path: '/'
     },
-    saveUninitialized: false
+    saveUninitialized: false,
+    rolling: true
   });
 
   await fastify.register(fastifyOauth2, {

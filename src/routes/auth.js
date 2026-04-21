@@ -31,7 +31,13 @@ export default async function authRoutes(fastify) {
         name: info.name || email,
         picture: info.picture || null
       };
-      req.log.info({ email }, 'login ok');
+      // Explicit save: @fastify/session normally saves on response send, but being
+      // explicit here avoids a race where the redirect headers flush before the
+      // store write completes.
+      await new Promise((resolve, reject) => {
+        req.session.save((err) => (err ? reject(err) : resolve()));
+      });
+      req.log.info({ email, sid: req.session.sessionId }, 'login ok');
       return reply.redirect('/');
     } catch (err) {
       req.log.error({ err: err.message }, 'oauth callback failed');
