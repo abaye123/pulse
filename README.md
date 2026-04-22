@@ -103,61 +103,7 @@ Verify API: `curl http://127.0.0.1:3100/health` → `{"ok":true,"uptime":N}`
 
 ---
 
-## 4. Nginx vhost for the admin subdomain
-
-Example `/etc/nginx/sites-enabled/pulse.chatfree.app.conf`:
-
-```nginx
-server {
-    listen 80;
-    server_name pulse.chatfree.app;
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    server_name pulse.chatfree.app;
-
-    ssl_certificate     /etc/letsencrypt/live/pulse.chatfree.app/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/pulse.chatfree.app/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
-    # SSE endpoint for the live-mode dashboard — must NOT be buffered by nginx
-    location = /api/stream {
-        proxy_pass http://127.0.0.1:3100;
-        proxy_http_version 1.1;
-        proxy_set_header Host              $host;
-        proxy_set_header X-Real-IP         $remote_addr;
-        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_buffering off;
-        proxy_cache off;
-        proxy_read_timeout 24h;
-        chunked_transfer_encoding off;
-    }
-
-    location / {
-        proxy_pass http://127.0.0.1:3100;
-        proxy_set_header Host              $host;
-        proxy_set_header X-Real-IP         $remote_addr;
-        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}
-```
-
-Issue certs with certbot:
-```bash
-sudo certbot --nginx -d pulse.chatfree.app
-```
-
----
-
-## 5. Running as non-root (optional)
+## 4. Running as non-root (optional)
 
 If PM2 runs as a non-root user, two extra steps are needed:
 
@@ -176,7 +122,7 @@ When running as root (default here), neither step is needed.
 
 ---
 
-## 6. Updating
+## 5. Updating
 
 ```bash
 cd /opt/channels-monitor
@@ -189,7 +135,7 @@ pm2 logs channels-monitor --lines 50          # verify no errors on boot
 
 ---
 
-## 7. Operations
+## 6. Operations
 
 | Task | Command |
 |---|---|
@@ -203,7 +149,7 @@ pm2 logs channels-monitor --lines 50          # verify no errors on boot
 
 ---
 
-## 8. Troubleshooting
+## 7. Troubleshooting
 
 **"Docker socket permission denied" in logs.**
 The PM2 user can't read `/var/run/docker.sock`. Either run as root, or add the user to the `docker` group and restart PM2 (log out and back in first, group membership is re-read on shell login).
@@ -229,7 +175,7 @@ Run `npm run build:client` and `pm2 restart channels-monitor`.
 
 ---
 
-## 9. Directory layout
+## 8. Directory layout
 
 ```
 channels-monitor/
@@ -274,7 +220,7 @@ channels-monitor/
 
 ---
 
-## 10. Security notes
+## 9. Security notes
 
 - The Node process binds to `127.0.0.1` only — never expose it publicly. Nginx terminates TLS.
 - Every POST requires a double-submit CSRF token (`csrf` cookie + `X-CSRF-Token` header). The client reads the cookie automatically.
