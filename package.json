@@ -1,5 +1,5 @@
 {
-  "name": "channels-monitor",
+  "name": "pulse",
   "version": "0.1.0",
   "description": "Server monitoring & management dashboard for Dockerized Nginx-proxied instances",
   "type": "module",

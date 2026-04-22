@@ -1,4 +1,4 @@
-# channels-monitor (Pulse)
+# pulse (Pulse)
 
 Server monitoring & management dashboard for a single Ubuntu host running ~20 Docker Compose instances reverse-proxied by Nginx.
 
@@ -35,7 +35,7 @@ Server monitoring & management dashboard for a single Ubuntu host running ~20 Do
 2. **APIs & Services → OAuth consent screen:** set it to *External* (or *Internal* if you use Google Workspace). Add your email as a test user during development.
 3. **APIs & Services → Credentials → Create credentials → OAuth client ID:**
    - Application type: *Web application*
-   - Authorized redirect URI: `https://pulse.chatfree.app/auth/callback` (replace with your admin subdomain)
+   - Authorized redirect URI: `https://pulse.app/auth/callback` (replace with your admin subdomain)
 4. Copy the client ID and secret into `.env` (see next section).
 
 ---
@@ -44,14 +44,14 @@ Server monitoring & management dashboard for a single Ubuntu host running ~20 Do
 
 ```bash
 # Put the code where PM2 will run it
-sudo mkdir -p /opt/channels-monitor
-sudo chown -R "$USER:$USER" /opt/channels-monitor
-git clone <repo> /opt/channels-monitor        # or rsync from this directory
-cd /opt/channels-monitor
+sudo mkdir -p /opt/pulse
+sudo chown -R "$USER:$USER" /opt/pulse
+git clone <repo> /opt/pulse        # or rsync from this directory
+cd /opt/pulse
 
 # Create data + log directories
-sudo mkdir -p /var/lib/channels-monitor /var/log/channels-monitor
-sudo chown -R root:root /var/lib/channels-monitor /var/log/channels-monitor
+sudo mkdir -p /var/lib/pulse /var/log/pulse
+sudo chown -R root:root /var/lib/pulse /var/log/pulse
 # If PM2 runs as a non-root user, change ownership to that user.
 
 # Install deps + build the client
@@ -80,7 +80,7 @@ nano .env                                      # fill in all required values
 | `NGINX_SITES_DIR` | `/etc/nginx/sites-enabled` | If your Nginx uses a different layout (e.g. `/etc/nginx/conf.d`). |
 | `NGINX_PROCESS_NAME` | `nginx` | The process name `ss -p` shows for the Nginx worker. |
 | `DOCKER_COMPOSE_CMD` | `docker compose` | Keep as-is for Compose v2. Legacy v1 (`docker-compose`) is not supported. |
-| `DB_PATH` | `/var/lib/channels-monitor/metrics.db` | Must be writable by the PM2 user. |
+| `DB_PATH` | `/var/lib/pulse/metrics.db` | Must be writable by the PM2 user. |
 | `RETENTION_DAYS` | `30` | Daily purge (at 03:00) removes rows older than this. |
 
 ### Start
@@ -111,12 +111,12 @@ If PM2 runs as a non-root user, two extra steps are needed:
    ```bash
    sudo usermod -aG docker <user>
    ```
-2. **Nginx reload without password:** create `/etc/sudoers.d/channels-monitor`:
+2. **Nginx reload without password:** create `/etc/sudoers.d/pulse`:
    ```
    <user> ALL=(root) NOPASSWD: /usr/sbin/nginx -s reload
    <user> ALL=(root) NOPASSWD: /usr/sbin/nginx -t
    ```
-   Validate with `sudo visudo -cf /etc/sudoers.d/channels-monitor`.
+   Validate with `sudo visudo -cf /etc/sudoers.d/pulse`.
 
 When running as root (default here), neither step is needed.
 
@@ -125,12 +125,12 @@ When running as root (default here), neither step is needed.
 ## 5. Updating
 
 ```bash
-cd /opt/channels-monitor
+cd /opt/pulse
 git pull
 npm install
 npm run build:client
-pm2 restart channels-monitor
-pm2 logs channels-monitor --lines 50          # verify no errors on boot
+pm2 restart pulse
+pm2 logs pulse --lines 50          # verify no errors on boot
 ```
 
 ---
@@ -139,12 +139,12 @@ pm2 logs channels-monitor --lines 50          # verify no errors on boot
 
 | Task | Command |
 |---|---|
-| View live logs | `pm2 logs channels-monitor` |
-| Restart | `pm2 restart channels-monitor` |
-| Stop | `pm2 stop channels-monitor` |
-| Backup DB | `cp /var/lib/channels-monitor/metrics.db /backups/pulse-$(date +%F).db` |
-| Inspect DB | `sqlite3 /var/lib/channels-monitor/metrics.db '.tables'` |
-| Check collector run | `pm2 logs channels-monitor --lines 200 \| grep collector` |
+| View live logs | `pm2 logs pulse` |
+| Restart | `pm2 restart pulse` |
+| Stop | `pm2 stop pulse` |
+| Backup DB | `cp /var/lib/pulse/metrics.db /backups/pulse-$(date +%F).db` |
+| Inspect DB | `sqlite3 /var/lib/pulse/metrics.db '.tables'` |
+| Check collector run | `pm2 logs pulse --lines 200 \| grep collector` |
 | Test OAuth redirect URI | Open `https://<your-subdomain>/auth/google` in a browser |
 
 ---
@@ -162,7 +162,7 @@ The PM2 user can't read `/var/run/docker.sock`. Either run as root, or add the u
 `NGINX_SITES_DIR` didn't find any `.conf` files. Confirm with `ls /etc/nginx/sites-enabled/`.
 
 **Login redirects to `/denied`.**
-Your email is not in `ALLOWED_EMAILS`. Edit `.env`, then `pm2 restart channels-monitor`.
+Your email is not in `ALLOWED_EMAILS`. Edit `.env`, then `pm2 restart pulse`.
 
 **Login redirects back to `/login` forever.**
 Cookies over HTTP are dropped because `secure: true` is enforced in production. Make sure you're hitting `https://` (terminated by Nginx), not `http://`.
@@ -171,14 +171,14 @@ Cookies over HTTP are dropped because `secure: true` is enforced in production. 
 The shell wrapper refuses anything outside `docker`, `nginx`, `ss`, `sudo`. If you need to extend it, edit `src/lib/shell.js`.
 
 **Frontend shows the "client not built" stub.**
-Run `npm run build:client` and `pm2 restart channels-monitor`.
+Run `npm run build:client` and `pm2 restart pulse`.
 
 ---
 
 ## 8. Directory layout
 
 ```
-channels-monitor/
+pulse/
 ├── package.json
 ├── ecosystem.config.cjs
 ├── .env.example

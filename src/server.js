@@ -77,7 +77,7 @@ a{color:#4f46e5}</style></head>
     fastify.get('/', async (req, reply) => {
       reply.type('text/html; charset=utf-8');
       return `<!doctype html><html><body style="font-family:sans-serif;max-width:36rem;margin:4rem auto">
-<h1>channels-monitor</h1>
+<h1>pulse</h1>
 <p>Server is running but the React client has not been built.</p>
 <p>Run <code>npm run build:client</code> and restart PM2.</p>
 <p>Try <a href="/health">/health</a> to verify the API.</p>

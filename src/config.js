@@ -52,7 +52,7 @@ export const config = {
 
   nginxSitesDir: process.env.NGINX_SITES_DIR || '/etc/nginx/sites-enabled',
   composeBaseDir: process.env.COMPOSE_BASE_DIR || '/mnt/HC_Volume_102971677',
-  dbPath: process.env.DB_PATH || '/var/lib/channels-monitor/metrics.db',
+  dbPath: process.env.DB_PATH || '/var/lib/pulse/metrics.db',
 
   nginxProcessName: process.env.NGINX_PROCESS_NAME || 'nginx',
   composeCmd: parseComposeCmd(process.env.DOCKER_COMPOSE_CMD),

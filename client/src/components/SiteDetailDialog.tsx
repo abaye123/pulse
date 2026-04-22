@@ -32,7 +32,7 @@ function formatTick(ts: number): string {
 }
 
 function guessProjectFromSite(siteName: string): string | null {
-  // e.g. mesudrim.chatfree.app → "mesudrim"
+  // e.g. site.servise.app → "site"
   const parts = siteName.split('.');
   return parts[0] || null;
 }

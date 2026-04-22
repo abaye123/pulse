@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: 'channels-monitor',
+    name: 'pulse',
     script: './src/server.js',
     node_args: '--enable-source-maps',
     instances: 1,
@@ -10,8 +10,8 @@ module.exports = {
     env: {
       NODE_ENV: 'production'
     },
-    error_file: '/var/log/channels-monitor/error.log',
-    out_file: '/var/log/channels-monitor/out.log',
+    error_file: '/var/log/pulse/error.log',
+    out_file: '/var/log/pulse/out.log',
     merge_logs: true,
     time: true
   }]
