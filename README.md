@@ -1,4 +1,4 @@
-# pulse (Pulse)
+# Pulse
 
 Server monitoring & management dashboard for a single Ubuntu host running ~20 Docker Compose instances reverse-proxied by Nginx.
 
