@@ -14,6 +14,8 @@
     "disk": "Disk",
     "uptime": "Uptime",
     "cache": "cache",
+    "connections": "Connections",
+    "connectionsHint": "across {{count}} sites",
     "lastUpdate": "Updated {{seconds}}s ago",
     "neverUpdated": "Not yet updated"
   },
@@ -28,6 +30,7 @@
     "cpu": "CPU",
     "memory": "Memory",
     "network": "Network",
+    "connections": "Connections",
     "disk": "Disk",
     "noData": "No data for the selected range"
   },

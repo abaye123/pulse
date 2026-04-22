@@ -8,3 +8,4 @@ metrics.db
 metrics.db-journal
 metrics.db-wal
 metrics.db-shm
+.claude

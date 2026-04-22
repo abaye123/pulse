@@ -14,6 +14,8 @@
     "disk": "דיסק",
     "uptime": "זמן פעילות",
     "cache": "מטמון",
+    "connections": "חיבורים",
+    "connectionsHint": "ב-{{count}} אתרים",
     "lastUpdate": "עודכן לפני {{seconds}} שניות",
     "neverUpdated": "טרם עודכן"
   },
@@ -28,6 +30,7 @@
     "cpu": "מעבד",
     "memory": "זיכרון",
     "network": "רשת",
+    "connections": "חיבורים",
     "disk": "דיסק",
     "noData": "אין נתונים להצגה בטווח הנבחר"
   },

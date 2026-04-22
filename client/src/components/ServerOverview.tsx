@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Cpu, MemoryStick, Activity, HardDrive } from 'lucide-react';
+import { Cpu, MemoryStick, Activity, HardDrive, Network } from 'lucide-react';
 import { MetricCard } from '@/components/MetricCard';
 import { useHistory } from '@/hooks/useHistory';
 import type { OverviewResponse } from '@/lib/api';
@@ -21,18 +21,25 @@ export function ServerOverview({ overview }: ServerOverviewProps) {
   const cpuHist = useHistory('system.cpu', '1h');
   const memHist = useHistory('system.mem', '1h');
   const loadHist = useHistory('system.load', '1h');
+  const connHist = useHistory('nginx.connections', '1h');
 
   const server = overview?.server;
   const disk = computeDiskRatio(overview?.disk || []);
+  const totalConnections = (overview?.sites || []).reduce(
+    (sum, s) => sum + (Number(s.httpConnections) || 0),
+    0
+  );
+  const siteCount = overview?.sites?.length || 0;
 
   const cpuSpark = (cpuHist.data?.points || []).map((p) => ({ value: Number(p.value) || 0 }));
   const memSpark = (memHist.data?.points || []).map((p) => ({
     value: p.usedMb && p.totalMb ? (Number(p.usedMb) / Number(p.totalMb)) * 100 : 0
   }));
   const loadSpark = (loadHist.data?.points || []).map((p) => ({ value: Number(p.load1) || 0 }));
+  const connSpark = (connHist.data?.points || []).map((p) => ({ value: Number(p.value) || 0 }));
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
       <MetricCard
         label={t('overview.cpu')}
         value={server ? `${server.cpuPct.toFixed(1)}%` : '—'}
@@ -67,6 +74,14 @@ export function ServerOverview({ overview }: ServerOverviewProps) {
         hint={`${disk.used.toFixed(1)} / ${disk.total.toFixed(1)} GB`}
         icon={HardDrive}
         sparklineColor="hsl(var(--success))"
+      />
+      <MetricCard
+        label={t('overview.connections')}
+        value={overview ? totalConnections.toLocaleString() : '—'}
+        hint={overview ? t('overview.connectionsHint', { count: siteCount }) : ''}
+        icon={Network}
+        sparkline={connSpark}
+        sparklineColor="hsl(var(--secondary))"
       />
     </div>
   );

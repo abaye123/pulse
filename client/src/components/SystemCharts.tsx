@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Cpu, MemoryStick, Network, HardDrive } from 'lucide-react';
+import { Cpu, MemoryStick, Network, HardDrive, Link2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -148,6 +148,33 @@ function NetworkTab({ range }: { range: Range }) {
   );
 }
 
+function ConnectionsTab({ range }: { range: Range }) {
+  const { data, loading } = useHistory('nginx.connections', range);
+  const points = (data?.points || []).map((p) => ({ ts: p.ts, connections: Number(p.value) || 0 }));
+  return (
+    <ChartBody loading={loading} hasPoints={points.length > 0}>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={points} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id="g-conn" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="hsl(var(--secondary))" stopOpacity={0.35} />
+              <stop offset="100%" stopColor="hsl(var(--secondary))" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="ts" tickFormatter={(v) => formatTick(v, range)} fontSize={12} stroke="hsl(var(--muted-foreground))" />
+          <YAxis fontSize={12} stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
+          <RechartsTooltip
+            labelFormatter={(v) => new Date(Number(v) * 1000).toLocaleString()}
+            contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8 }}
+          />
+          <Area type="monotone" dataKey="connections" stroke="hsl(var(--secondary))" strokeWidth={2} fill="url(#g-conn)" />
+        </AreaChart>
+      </ResponsiveContainer>
+    </ChartBody>
+  );
+}
+
 function DiskTab({ range }: { range: Range }) {
   const { data, loading } = useHistory('system.disk', range);
   const points = (data?.points || [])
@@ -192,11 +219,13 @@ export function SystemCharts() {
             <TabsTrigger value="cpu"><Cpu className="me-2 h-4 w-4" />{t('charts.cpu')}</TabsTrigger>
             <TabsTrigger value="memory"><MemoryStick className="me-2 h-4 w-4" />{t('charts.memory')}</TabsTrigger>
             <TabsTrigger value="network"><Network className="me-2 h-4 w-4" />{t('charts.network')}</TabsTrigger>
+            <TabsTrigger value="connections"><Link2 className="me-2 h-4 w-4" />{t('charts.connections')}</TabsTrigger>
             <TabsTrigger value="disk"><HardDrive className="me-2 h-4 w-4" />{t('charts.disk')}</TabsTrigger>
           </TabsList>
           <TabsContent value="cpu"><CpuTab range={range} /></TabsContent>
           <TabsContent value="memory"><MemoryTab range={range} /></TabsContent>
           <TabsContent value="network"><NetworkTab range={range} /></TabsContent>
+          <TabsContent value="connections"><ConnectionsTab range={range} /></TabsContent>
           <TabsContent value="disk"><DiskTab range={range} /></TabsContent>
         </Tabs>
       </CardContent>

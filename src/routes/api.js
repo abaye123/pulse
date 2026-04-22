@@ -128,6 +128,23 @@ function queryHistory(metric, query) {
       `).all(bucket, bucket, since, name);
       return rows.map((r) => ({ ts: r.bucket_ts, http: Math.round(r.http), sse: Math.round(r.sse) }));
     }
+    case 'nginx.connections': {
+      // Per-minute total of http_connections across all sites, then averaged
+      // inside each bucket. Summing across sites first avoids double counting
+      // and gives a meaningful "total active connections" curve.
+      const rows = d.prepare(`
+        SELECT (ts / ?) * ? AS bucket_ts, AVG(total) AS v
+        FROM (
+          SELECT ts, SUM(http_connections) AS total
+          FROM site_metrics
+          WHERE ts >= ?
+          GROUP BY ts
+        )
+        GROUP BY bucket_ts
+        ORDER BY bucket_ts
+      `).all(bucket, bucket, since);
+      return rows.map((r) => ({ ts: r.bucket_ts, value: Math.round(r.v) }));
+    }
     case 'site.latency': {
       const name = String(query.name || '');
       const rows = d.prepare(`
